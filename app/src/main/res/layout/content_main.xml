@@ -70,4 +70,23 @@
             android:text=""
             android:textAppearance="?android:attr/textAppearanceLarge" />
     </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Get Thumbnail"
+        android:id="@+id/gThumbnailBtn"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="onClickGetImage" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton"
+        android:minHeight="200dp"
+        android:minWidth="200dp"
+        android:layout_below="@+id/accountData"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>
