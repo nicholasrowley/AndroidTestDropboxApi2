@@ -143,4 +143,10 @@ public class MainActivity extends AppCompatActivity {
         //iButton.setImageURI(url);
     }
 
+    public void onClickVidScreen(View v){
+        //Proceed to View_Video
+        Intent intent = new Intent(MainActivity.this, View_Video.class);
+        startActivity(intent);
+    }
+
 }

@@ -21,9 +21,12 @@ public class LoginActivity extends AppCompatActivity {
         SignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Auth.startOAuth2Authentication(LoginActivity.this, getString(R.string.APP_KEY)); //this line:
+                //If access without requiring a login is needed then use the second line instead.
+                //Auth.startOAuth2Authentication(LoginActivity.this, getString(R.string.APP_KEY)); //this line:
                 // Context appContext = this.getApplicationContext(); must go, and instead you use
                 // a pointer to the activity you're in (probably this).
+                //use if not using first line.
+                getAccessToken();
             }
         });
     }
@@ -35,7 +38,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void getAccessToken() {
-        String accessToken = Auth.getOAuth2Token(); //generate Access Token
+        //If access without requiring a login is needed then use the second line instead.
+        //String accessToken = Auth.getOAuth2Token(); //generate Access Token
+        String accessToken = getString(R.string.ACCESS_TOKEN);
         if (accessToken != null) {
             //Store accessToken in SharedPreferences
             SharedPreferences prefs = getSharedPreferences("com.example.nick_.testapp2", Context.MODE_PRIVATE);
