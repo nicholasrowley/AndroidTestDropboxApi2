@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by nicholas.rowley on 9/9/2016.
@@ -23,11 +25,16 @@ public class GetDropboxFiles extends AsyncTask {
     private DbxClientV2 dbxClient;
     private Context context;
     private DbxDownloader<FileMetadata> downloader;
-    private String url;
+    private List<String> videoUrls;
+    private List<Metadata> folderContents;
+    private List<String> videoUris;
 
     GetDropboxFiles(DbxClientV2 dbxClient, Context context) {
         this.dbxClient = dbxClient;
         this.context = context;
+        folderContents = new ArrayList<Metadata>();
+        videoUrls = new ArrayList<String>();
+        videoUris = new ArrayList<String>();
     }
 
     @Override
@@ -39,8 +46,19 @@ public class GetDropboxFiles extends AsyncTask {
                             .withFormat(ThumbnailFormat.JPEG)
                             .withSize(ThumbnailSize.W1024H768)
                             .start();*/
-            url = dbxClient.files().getTemporaryLink("/3 Fires Gone Out #_converted(1).mp4").getLink();
-            Log.d("Create Link", "Success");
+
+            //contains metadata for all contents in the folder such as the URI links to each file.
+            folderContents = dbxClient.files().listFolder("/Videos/").getEntries();
+
+            //create temporary links for each file in the folder
+            for (Metadata fileItem : folderContents)
+            {
+                //to store temporary urls into a list
+                videoUrls.add(dbxClient.files().getTemporaryLink(fileItem.getPathLower()).getLink());
+                //to store uris into a list
+                videoUris.add(fileItem.getPathLower());
+            }
+            Log.d("Create Links", "Success");
         } catch (DbxException e) {
             e.printStackTrace();
         }
@@ -50,10 +68,14 @@ public class GetDropboxFiles extends AsyncTask {
     @Override
     protected void onPostExecute(Object o) {
         super.onPostExecute(o);
-        Toast.makeText(context, "Link generated successfully", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "Links generated successfully", Toast.LENGTH_SHORT).show();
     }
 
-    public String getTempURL() {
-        return url;
+    public List<String> getTempURLs() {
+        return videoUrls;
+    }
+
+    public List<String> getVideoUris() {
+        return videoUris;
     }
 }

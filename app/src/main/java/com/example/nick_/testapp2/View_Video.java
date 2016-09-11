@@ -17,10 +17,13 @@ import android.view.View;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class View_Video extends AppCompatActivity {
 
     private String ACCESS_TOKEN;
-    private String videoPath;
+    private List<String> videoPaths;
     private GetDropboxFiles thumbnail;
 
     private static ProgressDialog progressDialog;
@@ -47,6 +50,8 @@ public class View_Video extends AppCompatActivity {
 
         thumbnail = new GetDropboxFiles(DropboxClient.getClient(ACCESS_TOKEN), getApplicationContext());
         thumbnail.execute();
+
+        videoPaths = new ArrayList<String>();
 
 
         //vid view imp onCreate code
@@ -78,7 +83,7 @@ public class View_Video extends AppCompatActivity {
             MediaController mediaController = new MediaController(View_Video.this);
             mediaController.setAnchorView(videoView);
 
-            Uri video = Uri.parse(videoPath);
+            Uri video = Uri.parse(videoPaths.get(0));
             videoView.setMediaController(mediaController);
             videoView.setVideoURI(video);
             videoView.requestFocus();
@@ -108,7 +113,7 @@ public class View_Video extends AppCompatActivity {
     }
 
     public void onClickLoadVideo(View v) {
-        videoPath = thumbnail.getTempURL();
+        videoPaths = thumbnail.getTempURLs();
 
         //progress dialog shows when video is buffering
         progressDialog = ProgressDialog.show(View_Video.this, "", "Buffering video...", true);
