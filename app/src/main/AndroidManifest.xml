@@ -28,7 +28,7 @@
             <intent-filter>
 
                 <!-- Insert your app key after “db-  ...” -->
-                <data android:scheme="db-APP_KEY" />
+                <data android:scheme="db-APP_KEY"/>
 
                 <action android:name="android.intent.action.VIEW" />
 

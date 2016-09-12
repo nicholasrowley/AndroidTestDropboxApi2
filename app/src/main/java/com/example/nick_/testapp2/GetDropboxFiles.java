@@ -25,7 +25,7 @@ public class GetDropboxFiles extends AsyncTask {
     private DbxClientV2 dbxClient;
     private Context context;
     private DbxDownloader<FileMetadata> downloader;
-    private List<String> videoUrls;
+    private List<VideoInfo> videoInfos;
     private List<Metadata> folderContents;
     private List<String> videoUris;
 
@@ -33,7 +33,7 @@ public class GetDropboxFiles extends AsyncTask {
         this.dbxClient = dbxClient;
         this.context = context;
         folderContents = new ArrayList<Metadata>();
-        videoUrls = new ArrayList<String>();
+        videoInfos = new ArrayList<VideoInfo>();
         videoUris = new ArrayList<String>();
     }
 
@@ -54,7 +54,7 @@ public class GetDropboxFiles extends AsyncTask {
             for (Metadata fileItem : folderContents)
             {
                 //to store temporary urls into a list
-                videoUrls.add(dbxClient.files().getTemporaryLink(fileItem.getPathLower()).getLink());
+                videoInfos.add( new VideoInfo(fileItem.getName(), dbxClient.files().getTemporaryLink(fileItem.getPathLower()).getLink()));
                 //to store uris into a list
                 videoUris.add(fileItem.getPathLower());
             }
@@ -71,8 +71,8 @@ public class GetDropboxFiles extends AsyncTask {
         Toast.makeText(context, "Links generated successfully", Toast.LENGTH_SHORT).show();
     }
 
-    public List<String> getTempURLs() {
-        return videoUrls;
+    public List<VideoInfo> getVideoInfos() {
+        return videoInfos;
     }
 
     public List<String> getVideoUris() {

@@ -26,19 +26,18 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Get Video"
-        android:id="@+id/getVideoBtn"
-        android:layout_below="@+id/videoView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="31dp"
-        android:onClick="onClickLoadVideo" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="Back to Main"
         android:id="@+id/backToMainBtn"
-        android:layout_below="@+id/getVideoBtn"
         android:layout_centerHorizontal="true"
-        android:onClick="onClickReturnMain" />
+        android:onClick="onClickReturnMain"
+        android:layout_below="@+id/videoView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Small Text"
+        android:id="@+id/resultText"
+        android:layout_below="@+id/backToMainBtn"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

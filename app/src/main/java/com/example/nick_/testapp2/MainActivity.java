@@ -10,13 +10,17 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.dropbox.core.v2.DbxClientV2;
@@ -33,21 +37,35 @@ public class MainActivity extends AppCompatActivity {
     private String ACCESS_TOKEN;
     private GetDropboxFiles thumbnail;
     private TextView results;
-    private List<String> videoResults;
+    private List<VideoInfo> videoResults;
     private ImageView iview;
     private Bitmap ithumbnail;
     private Uri uriImage;
+    private Button button;
+    private LinearLayout lview;
+    private List<Button> galleryLinks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        button = new Button(this);
+        button.setText("Hello World");
+        button.setId(0);
+        button.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+        lview = (LinearLayout) findViewById(R.id.gallery);
+        lview.addView(button);
+
+        galleryLinks = new ArrayList<Button>();
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         results = (TextView) findViewById(R.id.createLinkResults);
-        iview = (ImageView) findViewById(R.id.imageView2);
-        videoResults = new ArrayList<String>();
+        videoResults = new ArrayList<VideoInfo>();
 
         if (!tokenExists()) {
             //No token
@@ -148,40 +166,67 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onClickGetTempLinks(View v){
-        thumbnail = new GetDropboxFiles(DropboxClient.getClient(ACCESS_TOKEN), getApplicationContext());
-        thumbnail.execute();
-        videoResults = thumbnail.getTempURLs();
-    }
+    public void onClick (View v) {
+        switch (v.getId()){
+            case R.id.showBtn:
+                //ibutton.setImageBitmap(ithumbnail);
+                //ibutton.setImageURI(uriImage);
+                Picasso.with(getApplicationContext())
+                        .load(videoResults.get(1).getTempUrl())
+                        .into(iview);
+                break;
+            case R.id.showUrlBtn:
+                String result = "";
 
-    public void onClickShowTempLinks(View v){
-        String result = "";
+                for (VideoInfo link : videoResults)
+                {
+                    result = result + "<Space>" + link.getTempUrl();
+                }
+                results.setText(result);
 
-        for (String link : videoResults)
-        {
-            result = result + "<Space>" + link;
+                //generate a vid image on a button
+
+                //ithumbnail = ThumbnailUtils.createVideoThumbnail(videoResults.get(0), MediaStore.Images.Thumbnails.MICRO_KIND);
+                //uriImage = Uri.parse(videoResults.get(0));
+                break;
+            case R.id.vidScreenBtn:
+                //Proceed to View_Video
+                results.setText(videoResults.get(0).getTempUrl());
+                Intent intent = new Intent(MainActivity.this, View_Video.class);
+                intent.putExtra("videoIndex", videoResults.get(0));
+                startActivity(intent);
+                break;
+            case R.id.gVidLinksBtn:
+                thumbnail = new GetDropboxFiles(DropboxClient.getClient(ACCESS_TOKEN), getApplicationContext());
+                thumbnail.execute();
+                videoResults = thumbnail.getVideoInfos();
+                break;
+            case R.id.gGalleryLinks:
+                int i = 0;
+                for (VideoInfo link : videoResults) {
+                    galleryLinks.add(new Button(this));
+                    galleryLinks.get(i).setText(link.getName());
+                    galleryLinks.get(i).setId(i);
+                    galleryLinks.get(i).setLayoutParams(new LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT));
+                    lview.addView(galleryLinks.get(i));
+                    galleryLinks.get(i).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            //Proceed to View_Video
+                            results.setText(videoResults.get(view.getId()).getTempUrl());
+                            Intent intent = new Intent(MainActivity.this, View_Video.class);
+                            intent.putExtra("videoIndex", videoResults.get(view.getId()));
+                            startActivity(intent);
+                        }
+                    });
+                    i++;
+                }
+                break;
         }
-        results.setText(result);
-
-        //generate a vid image on a button
-
-        //ithumbnail = ThumbnailUtils.createVideoThumbnail(videoResults.get(0), MediaStore.Images.Thumbnails.MICRO_KIND);
-        //uriImage = Uri.parse(videoResults.get(0));
-
     }
 
-    public void onClickVidScreen(View v){
-        //Proceed to View_Video
-        Intent intent = new Intent(MainActivity.this, View_Video.class);
-        startActivity(intent);
-    }
 
-    public void onClickShow(View v){
-        //ibutton.setImageBitmap(ithumbnail);
-        //ibutton.setImageURI(uriImage);
-        Picasso.with(getApplicationContext())
-                .load(videoResults.get(1))
-                .into(iview);
-    }
 
 }

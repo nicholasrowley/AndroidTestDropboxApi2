@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.MediaController;
+import android.widget.TextView;
 import android.widget.VideoView;
 
 import java.util.ArrayList;
@@ -22,9 +23,7 @@ import java.util.List;
 
 public class View_Video extends AppCompatActivity {
 
-    private String ACCESS_TOKEN;
-    private List<String> videoPaths;
-    private GetDropboxFiles thumbnail;
+    private VideoInfo videoInfo;
 
     private static ProgressDialog progressDialog;
     String videourl;
@@ -37,27 +36,24 @@ public class View_Video extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        Bundle extras = getIntent().getExtras();
 
-        ACCESS_TOKEN = retrieveAccessToken();
-
-        thumbnail = new GetDropboxFiles(DropboxClient.getClient(ACCESS_TOKEN), getApplicationContext());
-        thumbnail.execute();
-
-        videoPaths = new ArrayList<String>();
-
+        TextView tview = (TextView) findViewById(R.id.resultText);
+        if (extras != null) {
+            videoInfo = (VideoInfo) extras.getSerializable("videoIndex");
+            tview.setText(videoInfo.getTempUrl());
+        }
 
         //vid view imp onCreate code
         videoView = (VideoView) findViewById(R.id.videoView);
 
 
+
+        //progress dialog shows when video is buffering
+        progressDialog = ProgressDialog.show(View_Video.this, "", "Buffering video...", true);
+        progressDialog.setCancelable(true);
+
+        PlayVideo();
     }
 
     private String retrieveAccessToken() {
@@ -83,7 +79,7 @@ public class View_Video extends AppCompatActivity {
             MediaController mediaController = new MediaController(View_Video.this);
             mediaController.setAnchorView(videoView);
 
-            Uri video = Uri.parse(videoPaths.get(0));
+            Uri video = Uri.parse(videoInfo.getTempUrl());
             videoView.setMediaController(mediaController);
             videoView.setVideoURI(video);
             videoView.requestFocus();
@@ -110,16 +106,6 @@ public class View_Video extends AppCompatActivity {
 
     public void onClickReturnMain(View v) {
         startActivity(new Intent(View_Video.this, MainActivity.class));
-    }
-
-    public void onClickLoadVideo(View v) {
-        videoPaths = thumbnail.getTempURLs();
-
-        //progress dialog shows when video is buffering
-        progressDialog = ProgressDialog.show(View_Video.this, "", "Buffering video...", true);
-        progressDialog.setCancelable(true);
-
-        PlayVideo();
     }
 
 }
